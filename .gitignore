@@ -14,7 +14,11 @@ Whitelist files or directories below
 
 !README.md
 
-!Picture/Art2/
+!Picture/Art2/**
+!Expansions/bule_eyes.cdb
+!Expansions/Script/**
+!Expansions/pics/**
 
-!config.yml
+
+
 
