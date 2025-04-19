@@ -14,7 +14,7 @@ Whitelist files or directories below
 
 !README.md
 
-!Picture/Art2
+!Picture/Art2/
 
 !config.yml
 
