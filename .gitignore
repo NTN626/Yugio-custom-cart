@@ -1,0 +1,20 @@
+Ignore everything by default
+
+
+
+Allow git to recurse into directories
+
+!*/
+
+Keep this .gitignore file
+
+!.gitignore
+
+Whitelist files or directories below
+
+!README.md
+
+!src/
+
+!config.yml
+
