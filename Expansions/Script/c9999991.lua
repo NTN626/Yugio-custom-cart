@@ -1,7 +1,12 @@
 --碧鋼の機竜
 local s,id,o=GetID()
 function s.initial_effect(c)
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xdd),1)
+	-- Synchro Summon: 1 Tuner + 1 non‑Dragon Synchro Monster
+	aux.AddSynchroProcedure(c, nil,
+		aux.NonTuner(function(c)
+			return c:IsType(TYPE_SYNCHRO) and not c:IsRace(RACE_DRAGON)
+		end),
+	1)
 	c:EnableReviveLimit()
 	-- Effect 1: When this card is Special Summoned: Target 1 Special Summoned monster your opponent controls; return that target to the hand.
 	local e1=Effect.CreateEffect(c)

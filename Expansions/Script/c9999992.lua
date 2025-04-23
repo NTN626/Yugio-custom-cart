@@ -1,70 +1,77 @@
---Blue-Eyes Chaos Dragon
-local s,id,o=GetID()
+-- Blue‑Eyes Chaos Dragon
+-- ID = 9999992
+local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddSynchroProcedure(c,nil,aux.NonTuner(Card.IsSetCard,0xdd),1)
+	 -- Synchro Summon: 1 Tuner + 1 non‑Dragon Synchro Monster
+	aux.AddSynchroProcedure(c, nil,
+		aux.NonTuner(function(c)
+			return c:IsType(TYPE_SYNCHRO) and not c:IsRace(RACE_DRAGON)
+		end),
+	1)
 	c:EnableReviveLimit()
-	 -- Effect 1: If this card is Special Summoned: You can negate the effects of all face-up cards your opponent currently controls.
+	-- (1) If this card is Special Summoned during the Battle Phase: negate all face‑up opponent cards
 	local e1=Effect.CreateEffect(c)
-	e1:SetDescription(aux.Stringid(9999992,0))
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DISABLE)
 	e1:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e1:SetCode(EVENT_SPSUMMON_SUCCESS)
 	e1:SetProperty(EFFECT_FLAG_DELAY)
-	e1:SetCondition(c9999992.spcon)
-	e1:SetTarget(c9999992.sptg)
-	e1:SetOperation(c9999992.spop)
+	e1:SetCondition(s.spcon)
+	e1:SetTarget(s.sptg)
+	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	-- Effect 2: This card can attack while in face-up Defense Position, and use its DEF for damage calculation.
+	-- (2) This card can attack while in face‑up Defense Position, and uses its DEF for damage
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_DEFENSE_ATTACK)
 	e2:SetValue(1)
 	c:RegisterEffect(e2)
-	-- Effect 3: This card can attack a number of times each Battle Phase equal to the number of Normal Monsters you control or have in your Graveyard.
+	-- (3) Extra attacks: total Normal Monsters you control or in your GY
 	local e3=Effect.CreateEffect(c)
 	e3:SetType(EFFECT_TYPE_SINGLE)
 	e3:SetCode(EFFECT_EXTRA_ATTACK)
-	e3:SetValue(c9999992.atkval)
+	e3:SetValue(s.atkval)
 	c:RegisterEffect(e3)
 end
 
--- Effect 1 condition: Check if this card was Special Summoned.
-function c9999992.spcon(e,tp,eg,ep,ev,re,r,rp)
+-- (1) Condition: Synchro Summoned during Battle Phase
+function s.spcon(e,tp,eg,ep,ev,re,r,rp)
+	local ph=Duel.GetCurrentPhase()
 	return e:GetHandler():IsSummonType(SUMMON_TYPE_SPECIAL)
+	   and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
 
--- Effect 1 target: All face-up cards your opponent currently controls.
-function c9999992.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
-	if chk==0 then 
+-- (1) Target: any face‑up card opponent controls
+function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then
 		return Duel.IsExistingMatchingCard(Card.IsFaceup, tp, 0, LOCATION_ONFIELD, 1, nil)
 	end
 	local g=Duel.GetMatchingGroup(Card.IsFaceup, tp, 0, LOCATION_ONFIELD, nil)
 	Duel.SetOperationInfo(0, CATEGORY_DISABLE, g, #g, 0, 0)
 end
 
--- Effect 1 operation: Negate the effects of all face-up cards your opponent currently controls.
-function c9999992.spop(e,tp,eg,ep,ev,re,r,rp)
+-- (1) Operation: negate their effects
+function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
 	local g=Duel.GetMatchingGroup(Card.IsFaceup, tp, 0, LOCATION_ONFIELD, nil)
-	if #g==0 then return end
 	for tc in aux.Next(g) do
 		Duel.NegateRelatedChain(tc, RESET_TURN_SET)
-		local e1=Effect.CreateEffect(c)
-		e1:SetType(EFFECT_TYPE_SINGLE)
-		e1:SetCode(EFFECT_DISABLE)
-		e1:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e1)
-		local e2=Effect.CreateEffect(c)
-		e2:SetType(EFFECT_TYPE_SINGLE)
-		e2:SetCode(EFFECT_DISABLE_EFFECT)
-		e2:SetValue(RESET_TURN_SET)
-		e2:SetReset(RESET_EVENT+RESETS_STANDARD)
-		tc:RegisterEffect(e2)
+		local d1=Effect.CreateEffect(c)
+		d1:SetType(EFFECT_TYPE_SINGLE)
+		d1:SetCode(EFFECT_DISABLE)
+		d1:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(d1)
+		local d2=Effect.CreateEffect(c)
+		d2:SetType(EFFECT_TYPE_SINGLE)
+		d2:SetCode(EFFECT_DISABLE_EFFECT)
+		d2:SetValue(RESET_TURN_SET)
+		d2:SetReset(RESET_EVENT+RESETS_STANDARD)
+		tc:RegisterEffect(d2)
 	end
 end
 
 -- Effect 3: Calculate extra attacks: the number of Normal Monsters you control or have in your Graveyard minus 1.
-function c9999992.atkval(e,c)
+function s.atkval(e,c)
 	local tp = c:GetControler()
 	local countField = Duel.GetMatchingGroupCount(
 		function(card)

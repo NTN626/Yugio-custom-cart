@@ -1,11 +1,11 @@
 -- Lightbind Aegis
--- Fusion‑Materials: “Maiden of White” (44055629) + “Blue‑Eyes White Dragon” (89631139)
+-- Fusion‑Materials: “Maiden of White” (17947697) + “Blue‑Eyes White Dragon” (89631139)
 -- ID = 9999993
 local s,id=GetID()
 function s.initial_effect(c)
 	-- Fusion procedure
+	aux.AddFusionProcCode2(c,17947697,89631139,false,false)
 	c:EnableReviveLimit()
-	aux.AddFusionProcCode2(c,44055629,89631139,true,true)
 	-- GY Quick Effect: negate + destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,1))
@@ -57,12 +57,10 @@ end
 -- e2: Standby return
 function s.rettg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
-		return Duel.IsExistingMatchingCard(function(c)
-			return c:IsAttribute(ATTRIBUTE_LIGHT)
-			   and c:IsRace(RACE_DRAGON)
-			   and c:IsType(TYPE_SYNCHRO)
-			   and c:IsAbleToDeck()
-		end,tp,LOCATION_GRAVE,0,1,nil)
+		return Duel.IsExistingMatchingCard(
+			function(c) return c:IsSetCard(0xdd) and c:IsType(TYPE_MONSTER) and c:IsAbleToDeck() end,
+			tp,LOCATION_GRAVE,0,1,nil
+		)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,e:GetHandler(),1,0,0)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,nil,1,tp,LOCATION_GRAVE)
