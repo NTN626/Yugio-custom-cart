@@ -2,21 +2,11 @@
 -- ID = 9999990
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Only one “Primordial Sorcerer of the Blue-Eyes” on the field
-	c:SetUniqueOnField(1,0,id)
+
 	-- Fusion procedure: 2 LIGHT monsters
 	c:EnableReviveLimit()
-	aux.AddFusionProcFunRep(c,
-		function(mc) return mc:IsAttribute(ATTRIBUTE_LIGHT) end,
-	2,2,true)
-
+	aux.AddFusionProcFunRep(c, function(mc) return mc:IsAttribute(ATTRIBUTE_LIGHT) end, 2,2,true)
 	-- Must be Fusion Summoned only
-	local e0=Effect.CreateEffect(c)
-	e0:SetType(EFFECT_TYPE_SINGLE)
-	e0:SetProperty(EFFECT_FLAG_CANNOT_DISABLE+EFFECT_FLAG_UNCOPYABLE)
-	e0:SetCode(EFFECT_SPSUMMON_CONDITION)
-	e0:SetValue(aux.fuslimit)
-	c:RegisterEffect(e0)
 
 	-- You cannot Special Summon monsters, except LIGHT monsters
 	local e1=Effect.CreateEffect(c)
@@ -27,7 +17,6 @@ function s.initial_effect(c)
 	e1:SetTargetRange(1,0)
 	e1:SetTarget(s.splimit)
 	c:RegisterEffect(e1)
-
 	-- (Quick) Once per turn: destroy 1 card you control and 1 card on the field
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,0))
@@ -40,8 +29,7 @@ function s.initial_effect(c)
 	e2:SetTarget(s.destg)
 	e2:SetOperation(s.desop)
 	c:RegisterEffect(e2)
-
-	-- If this card is destroyed by battle or card effect: register for next Standby
+	-- If this card is destroyed by battle or card effect: Special Summon 1 LIGHT monster from your GY during the next Standby
 	local e3=Effect.CreateEffect(c)
 	e3:SetDescription(aux.Stringid(id,1))
 	e3:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
@@ -53,37 +41,39 @@ function s.initial_effect(c)
 	c:RegisterEffect(e3)
 end
 
--- Special Summon limit: non-LIGHT forbidden
-function s.splimit(e,c,sump,sumtype,sumpos,targetp,se)
+-- cannot Special Summon non-LIGHT
+function s.splimit(e,c)
 	return not c:IsAttribute(ATTRIBUTE_LIGHT)
 end
 
--- Quick Effect target: 1 you control + 1 anywhere
+-- Quick: target 1 you control + 1 anywhere
 function s.destg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chkc then return false end
 	if chk==0 then
-		return Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,0,1,nil)
-		  and Duel.IsExistingTarget(nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
+		return Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,0,1,nil)
+		   and Duel.IsExistingTarget(aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g1=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,0,1,1,nil)
+	local g1=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_DESTROY)
-	local g2=Duel.SelectTarget(tp,nil,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1:GetFirst())
+	local g2=Duel.SelectTarget(tp,aux.TRUE,tp,LOCATION_ONFIELD,LOCATION_ONFIELD,1,1,g1:GetFirst())
 	g1:Merge(g2)
 	Duel.SetOperationInfo(0,CATEGORY_DESTROY,g1,2,0,0)
 end
 function s.desop(e,tp,eg,ep,ev,re,r,rp)
-	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS):Filter(Card.IsRelateToEffect,nil,e)
+	local g=Duel.GetChainInfo(0,CHAININFO_TARGET_CARDS)
+			 :Filter(Card.IsRelateToEffect,nil,e)
 	if #g>0 then Duel.Destroy(g,REASON_EFFECT) end
 end
 
--- Register for next turn’s Standby
+-- register for next Standby
 function s.regcon(e,tp,eg,ep,ev,re,r,rp)
 	return bit.band(r,REASON_BATTLE+REASON_EFFECT)~=0
 end
 function s.regop(e,tp,eg,ep,ev,re,r,rp)
-	local e1=Effect.CreateEffect(e:GetHandler())
-	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_TRIGGER_F)
+	local c=e:GetHandler()
+	local e1=Effect.CreateEffect(c)
+	e1:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e1:SetCode(EVENT_PHASE+PHASE_STANDBY)
 	e1:SetCountLimit(1)
 	e1:SetLabel(Duel.GetTurnCount())
@@ -103,7 +93,10 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_CARD,0,id)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_SPSUMMON)
 	local g=Duel.SelectMatchingCard(tp,
-		aux.NecroValleyFilter(function(c) return c:IsAttribute(ATTRIBUTE_LIGHT) and c:IsCanBeSpecialSummoned(e,0,tp,false,false) end),
+		aux.NecroValleyFilter(function(c)
+			return c:IsAttribute(ATTRIBUTE_LIGHT)
+			   and c:IsCanBeSpecialSummoned(e,0,tp,false,false)
+		end),
 		tp,LOCATION_GRAVE,0,1,1,nil)
 	if #g>0 then
 		Duel.SpecialSummon(g,0,tp,tp,false,false,POS_FACEUP)
