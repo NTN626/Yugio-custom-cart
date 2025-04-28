@@ -125,15 +125,14 @@ function s.gravtg(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	if chk==0 then
 		return Duel.IsExistingTarget(s.primstfilter,tp,
 				   LOCATION_GRAVE+LOCATION_REMOVED,0,1,nil)
-		   and Duel.IsExistingTarget(Card.IsFaceup,tp,0,LOCATION_SZONE,1,nil)
+		   and Duel.IsExistingTarget(s.opstfilter,tp,0,LOCATION_SZONE,1,nil)
 	end
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
 	local g1=Duel.SelectTarget(tp,s.primstfilter,tp,
 		LOCATION_GRAVE+LOCATION_REMOVED,0,1,1,nil)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_TODECK)
-	local g2=Duel.SelectTarget(tp,Card.IsFaceup,tp,0,
+	local g2=Duel.SelectTarget(tp,s.opstfilter,tp,0,
 		LOCATION_SZONE,1,1,nil)
-	-- we will send 3 cards: this card, g1, and g2
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g1,1,tp,
 		LOCATION_GRAVE+LOCATION_REMOVED)
 	Duel.SetOperationInfo(0,CATEGORY_TODECK,g2,1,1-tp,
