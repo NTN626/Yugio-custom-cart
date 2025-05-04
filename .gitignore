@@ -16,10 +16,12 @@ Whitelist files or directories below
 
 !Picture/Art2/**
 !Picture/Closeup/999999**
+!Picture/Closeup/88888**
 !Expansions/bule_eyes.cdb
+!Expansions/honkai_3.cdb
 !Expansions/Script/**
 !Expansions/pics/**
-!Expansions/bule_eyes.cdb
+
 
 
 

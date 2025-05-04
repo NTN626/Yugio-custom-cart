@@ -1,15 +1,14 @@
--- Blue‑Eyes Chaos Dragon
--- ID = 9999992
+-- ID = 88888890
 local s,id=GetID()
 function s.initial_effect(c)
-	 -- Synchro Summon: 1 Tuner + 1 non-Tuner Dragon Synchro Monster
+	 -- Synchro Summon: 1 Tuner + 1 non-Tuner Warrior Synchro Monster
 	aux.AddSynchroProcedure(c, nil,
 		aux.NonTuner(function(c)
-			return c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_DRAGON)
+			return c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_WARRIOR)
 		end),
 	1)
 	c:EnableReviveLimit()
-	-- (1) If this card is Special Summoned during the Battle Phase: negate all face‑up opponent cards
+	-- (1) If this card is Special Summoned during the Battle Phase: negate all face-up opponent cards
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_DISABLE)
@@ -20,7 +19,7 @@ function s.initial_effect(c)
 	e1:SetTarget(s.sptg)
 	e1:SetOperation(s.spop)
 	c:RegisterEffect(e1)
-	-- (2) This card can attack while in face‑up Defense Position, and uses its DEF for damage
+	-- (2) This card can attack while in face-up Defense Position, and uses its DEF for damage
 	local e2=Effect.CreateEffect(c)
 	e2:SetType(EFFECT_TYPE_SINGLE)
 	e2:SetCode(EFFECT_DEFENSE_ATTACK)
@@ -41,7 +40,7 @@ function s.spcon(e,tp,eg,ep,ev,re,r,rp)
 	   and (ph>=PHASE_BATTLE_START and ph<=PHASE_BATTLE)
 end
 
--- (1) Target: any face‑up card opponent controls
+-- (1) Target: any face-up card opponent controls
 function s.sptg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return Duel.IsExistingMatchingCard(Card.IsFaceup, tp, 0, LOCATION_ONFIELD, 1, nil)
@@ -70,7 +69,7 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- Effect 3: Calculate extra attacks: the number of Normal Monsters you control or have in your Graveyard minus 1.
+-- (3) Calculate extra attacks: the number of Normal Monsters you control or have in your Graveyard minus 1.
 function s.atkval(e,c)
 	local tp = c:GetControler()
 	local countField = Duel.GetMatchingGroupCount(

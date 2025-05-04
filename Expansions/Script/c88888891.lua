@@ -1,10 +1,10 @@
---碧鋼の機竜
-local s,id,o=GetID()
+--碧鋼の機竜 (Custom)
+local s,id=GetID()
 function s.initial_effect(c)
-	-- Synchro Summon: 1 Tuner + 1 non-Tuner Dragon Synchro Monster
+	-- Synchro Summon: 1 Tuner + 1 non-Tuner Warrior Synchro Monster
 	aux.AddSynchroProcedure(c, nil,
 		aux.NonTuner(function(c)
-			return c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_DRAGON)
+			return c:IsType(TYPE_SYNCHRO) and c:IsRace(RACE_WARRIOR)
 		end),
 	1)
 	c:EnableReviveLimit()
@@ -28,14 +28,14 @@ function s.initial_effect(c)
 	e3:SetValue(1)
 	c:RegisterEffect(e3)
 	-- Effect 3: When this Synchro Summoned card is destroyed by card effect and sent to the GY:
-	-- You can add 1 Level 1 LIGHT Tuner from your Deck or your GY to your hand.
+	-- You can add 1 Level 1 LIGHT Tuner from your Deck or your GY to your hand.
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
 	e2:SetCategory(CATEGORY_TOHAND+CATEGORY_SEARCH)
 	e2:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
 	e2:SetProperty(EFFECT_FLAG_DELAY)
 	e2:SetCode(EVENT_TO_GRAVE)
-	e2:SetCountLimit(1,id+100)
+	e2:SetCountLimit(1,88888805)
 	e2:SetCondition(s.thcon)
 	e2:SetTarget(s.thtg)
 	e2:SetOperation(s.thop)
@@ -71,19 +71,19 @@ function s.thcon(e,tp,eg,ep,ev,re,r,rp)
 	return c:IsReason(REASON_DESTROY) and c:IsReason(REASON_EFFECT)
 	   and c:IsPreviousLocation(LOCATION_MZONE)
 end
--- Lọc: Level 1, LIGHT, Tuner, có thể thêm vào tay
+-- Filter: Level 1, LIGHT, Tuner, can be added to hand
 function s.thfilter(c)
 	return c:IsLevel(1) and c:IsAttribute(ATTRIBUTE_LIGHT)
 	   and c:IsType(TYPE_TUNER) and c:IsAbleToHand()
 end
--- Target: kiểm tra tồn tại ít nhất 1 lá thỏa filter trong Deck hoặc GY
+-- Target: check for at least 1 matching card in Deck or GY
 function s.thtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	if chk==0 then
 		return Duel.IsExistingMatchingCard(s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,nil)
 	end
 	Duel.SetOperationInfo(0,CATEGORY_TOHAND,nil,1,tp,LOCATION_DECK+LOCATION_GRAVE)
 end
--- Operation: chọn 1 lá, đưa vào tay, lật xác nhận
+-- Operation: select 1 card, add to hand, reveal to opponent
 function s.thop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Hint(HINT_SELECTMSG,tp,HINTMSG_ATOHAND)
 	local g=Duel.SelectMatchingCard(tp,s.thfilter,tp,LOCATION_DECK+LOCATION_GRAVE,0,1,1,nil)
