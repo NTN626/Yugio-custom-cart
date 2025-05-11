@@ -55,7 +55,8 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	Duel.RegisterEffect(e1,tp)
 end
 function s.splimit(e,c)
-	return not c:IsRace(RACE_WARRIOR) and c:IsLocation(LOCATION_EXTRA)
+	return c:IsLocation(LOCATION_EXTRA)
+	   and not (c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_LIGHT))
 end
 -- Fusion Summon procedure
 function s.filter1(c,e)

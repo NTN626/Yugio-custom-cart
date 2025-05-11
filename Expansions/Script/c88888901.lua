@@ -1,8 +1,6 @@
--- Primite Requiem
--- ID = 9999990
 local s,id=GetID()
 function s.initial_effect(c)
-	-- Effect 1: Fusion Summon 1 Dragon Fusion Monster
+	-- Effect 1: Fusion Summon 1 Fusion Monster
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetCategory(CATEGORY_SPECIAL_SUMMON+CATEGORY_FUSION_SUMMON+CATEGORY_TODECK)
@@ -16,7 +14,7 @@ function s.initial_effect(c)
 	c:RegisterEffect(e1)
 
 	-- Effect 2: GY Quick — in opponent’s Main Phase,
-	-- shuffle this card + 1 “Primite” S/T in your GY or banished,
+	-- shuffle this card + 1 “Flame Chasers” S/T in your GY or banished,
 	-- then shuffle 1 face-up S/T your opponent controls
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(id,1))
@@ -95,6 +93,7 @@ function s.fusop(e,tp,eg,ep,ev,re,r,rp)
 	local mat = Duel.SelectFusionMaterial(tp,fc,mg,nil,chkf)
 	aux.FCheckAdditional = nil
 	if not mat or mat:GetCount()==0 then return end
+	 fc:SetMaterial(mat)
 	Duel.SendtoDeck(mat,nil,SEQ_DECKSHUFFLE,
 		REASON_EFFECT+REASON_MATERIAL+REASON_FUSION)
 	Duel.BreakEffect()

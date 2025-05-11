@@ -31,6 +31,25 @@ function s.initial_effect(c)
 	e3:SetCode(EFFECT_EXTRA_ATTACK)
 	e3:SetValue(s.atkval)
 	c:RegisterEffect(e3)
+
+	-- (4) Cannot be destroyed by battle
+	local e6=Effect.CreateEffect(c)
+	e6:SetType(EFFECT_TYPE_SINGLE)
+	e6:SetProperty(EFFECT_FLAG_SINGLE_RANGE)
+	e6:SetRange(LOCATION_MZONE)
+	e6:SetCode(EFFECT_INDESTRUCTABLE_BATTLE)
+	e6:SetValue(1)
+	c:RegisterEffect(e6)
+	-- (4) At the end of the Damage Step, when this card attacks an opponent's monster, but the opponent's monster was not destroyed by the battle: You can banish that opponent's monster.
+	local e7=Effect.CreateEffect(c)
+	e7:SetDescription(aux.Stringid(2129638,0))
+	e7:SetCategory(CATEGORY_REMOVE)
+	e7:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_O)
+	e7:SetCode(EVENT_DAMAGE_STEP_END)
+	e7:SetCondition(s.rmcon)
+	e7:SetTarget(s.rmtg)
+	e7:SetOperation(s.rmop)
+	c:RegisterEffect(e7)
 end
 
 -- (1) Condition: Synchro Summoned during Battle Phase
@@ -82,5 +101,23 @@ function s.atkval(e,c)
 		return 0
 	else
 		return total - 1
+	end
+end
+
+function s.rmcon(e,tp,eg,ep,ev,re,r,rp)
+	local c=e:GetHandler()
+	local bc=c:GetBattleTarget()
+	e:SetLabelObject(bc)
+	return c==Duel.GetAttacker() and aux.dsercon(e,tp,eg,ep,ev,re,r,rp)
+		and bc and c:IsStatus(STATUS_OPPO_BATTLE) and bc:IsOnField() and bc:IsRelateToBattle()
+end
+function s.rmtg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then return e:GetLabelObject():IsAbleToRemove() end
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,e:GetLabelObject(),1,0,0)
+end
+function s.rmop(e,tp,eg,ep,ev,re,r,rp)
+	local bc=e:GetLabelObject()
+	if bc:IsRelateToBattle() then
+		Duel.Remove(bc,POS_FACEUP,REASON_EFFECT)
 	end
 end

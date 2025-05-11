@@ -2,8 +2,8 @@
 -- ID = 9999995
 local s,id=GetID()
 function s.initial_effect(c)
-	aux.AddCodeList(c,88888800)  -- “Blue-Eyes White Dragon”
-	aux.AddCodeList(c,88888896)  -- “Crimson Dragon”
+	aux.AddCodeList(c,88888800)  
+	aux.AddCodeList(c,88888896)  
 
 	-- (1) Activate: Special Summon 1 Tuner from your GY in Defense
 	local e1=Effect.CreateEffect(c)
@@ -54,7 +54,7 @@ function s.activate(e,tp,eg,ep,ev,re,r,rp)
 	local tc=Duel.GetFirstTarget()
 	if not tc or not tc:IsRelateToEffect(e) then return end
 	if Duel.SpecialSummon(tc,0,tp,tp,false,false,POS_FACEUP_DEFENSE)==0 then return end
-	-- Restrict Extra Deck Summons to LIGHT Dragon Monsters only
+	-- Restrict Extra Deck Summons to LIGHT WARRIOR Monsters only
 	local e1=Effect.CreateEffect(c)
 	e1:SetType(EFFECT_TYPE_FIELD)
 	e1:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
@@ -70,11 +70,11 @@ function s.sumlimit(e,c,sump,sumpos,targetp,se)
 	   and not (c:IsRace(RACE_WARRIOR) and c:IsAttribute(ATTRIBUTE_LIGHT))
 end
 
--- (2) Replacement filter: Level 9 Dragon Synchro or “Crimson Dragon”
+-- (2) Replacement filter: Level 9 WARRIO Synchro or “Crimson Dragon”
 function s.repfilter(c,tp)
 	return c:IsFaceup()
 	   and c:IsControler(tp)
-	   and ( c:IsCode(88888896)  -- “Crimson Dragon”
+	   and ( c:IsCode(88888896)  
 		 or (c:IsRace(RACE_WARRIOR) and c:IsType(TYPE_SYNCHRO) and c:IsLevel(9)) )
 	   and c:IsReason(REASON_BATTLE+REASON_EFFECT)
 	   and not c:IsReason(REASON_REPLACE)

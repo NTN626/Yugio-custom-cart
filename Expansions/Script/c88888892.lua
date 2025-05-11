@@ -4,8 +4,13 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	-- Fusion procedure
-	aux.AddFusionProcCode2(c,88888882,88888800,false,false)
 	c:EnableReviveLimit()
+	aux.AddFusionProcFun2(
+		c,
+		aux.FilterBoolFunction(Card.IsCode, 88888800),	
+		aux.FilterBoolFunction(Card.IsSetCard,0x929),		 
+		true												 
+	)
 	-- GY Quick Effect: negate + destroy
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,1))
