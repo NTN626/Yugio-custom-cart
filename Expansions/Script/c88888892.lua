@@ -1,14 +1,14 @@
 -- Lightbind Aegis (Custom)
 -- Fusion-Materials: “Raiden Mei” (88888882) + “NTN, The Captain of Hyperion” (88888800)
--- ID = 88888891
+-- ID = 88888892
 local s,id=GetID()
 function s.initial_effect(c)
 	-- Fusion procedure
 	c:EnableReviveLimit()
 	aux.AddFusionProcFun2(
 		c,
-		aux.FilterBoolFunction(Card.IsCode, 88888800),	
-		aux.FilterBoolFunction(Card.IsSetCard,0x929),		 
+		aux.FilterBoolFunction(Card.IsCode, 88888800),  
+		aux.FilterBoolFunction(Card.IsSetCard,0x929),		
 		true												 
 	)
 	-- GY Quick Effect: negate + destroy

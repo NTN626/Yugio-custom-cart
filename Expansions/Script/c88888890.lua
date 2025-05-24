@@ -88,14 +88,13 @@ function s.spop(e,tp,eg,ep,ev,re,r,rp)
 	end
 end
 
--- (3) Calculate extra attacks: the number of Normal Monsters you control or have in your Graveyard minus 1.
+-- (3) Calculate extra attacks: the number of "NTN, The Captain of Hyperion" you control or have in your Graveyard minus 1.
 function s.atkval(e,c)
 	local tp = c:GetControler()
-	local countField = Duel.GetMatchingGroupCount(
-		function(card)
-			return card:IsFaceup() and card:IsType(TYPE_NORMAL)
-		end, tp, LOCATION_MZONE, 0, nil)
-	local countGrave = Duel.GetMatchingGroupCount(Card.IsType, tp, LOCATION_GRAVE, 0, nil, TYPE_NORMAL)
+	-- Số lá 88888800 trên sân
+	local countField=Duel.GetMatchingGroupCount(Card.IsCode,tp,LOCATION_MZONE,0,nil,88888800)
+	-- Số lá 88888800 trong mộ
+	local countGrave=Duel.GetMatchingGroupCount(Card.IsCode,tp,LOCATION_GRAVE,0,nil,88888800)
 	local total = countField + countGrave
 	if total < 1 then
 		return 0

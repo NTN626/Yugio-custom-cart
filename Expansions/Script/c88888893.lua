@@ -3,6 +3,8 @@
 local s,id=GetID()
 function s.initial_effect(c)
 	aux.AddCodeList(c,88888800)
+	--code
+	aux.EnableChangeCode(c,88888800,LOCATION_MZONE+LOCATION_GRAVE)
 	-- special summon
 	local e1=Effect.CreateEffect(c)
 	e1:SetDescription(aux.Stringid(id,0))
@@ -41,7 +43,7 @@ function s.initial_effect(c)
 end
 
 function c88888893.cfilter(c)
-	return (c:IsFaceup() or c:IsLocation(LOCATION_GRAVE)) and c:IsCode(88888800)
+	return c:IsLocation(LOCATION_ONFIELD) and c:IsCode(88888881)
 end
 function c88888893.condition(e,tp,eg,ep,ev,re,r,rp)
 	return Duel.IsExistingMatchingCard(c88888893.cfilter,tp,LOCATION_ONFIELD+LOCATION_GRAVE,0,1,nil)
