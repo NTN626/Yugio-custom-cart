@@ -50,6 +50,16 @@ function s.initial_effect(c)
 	e7:SetTarget(s.rmtg)
 	e7:SetOperation(s.rmop)
 	c:RegisterEffect(e7)
+
+	local e8=Effect.CreateEffect(c)
+	e8:SetCategory(CATEGORY_REMOVE)
+	e8:SetType(EFFECT_TYPE_SINGLE+EFFECT_TYPE_TRIGGER_F)
+	e8:SetCode(EVENT_TO_GRAVE)
+	e8:SetProperty(EFFECT_FLAG_DELAY)
+	e8:SetCondition(s.bancon)
+	e8:SetTarget(s.bantg)
+	e8:SetOperation(s.banop)
+	c:RegisterEffect(e8)
 end
 
 -- (1) Condition: Synchro Summoned during Battle Phase
@@ -118,5 +128,25 @@ function s.rmop(e,tp,eg,ep,ev,re,r,rp)
 	local bc=e:GetLabelObject()
 	if bc:IsRelateToBattle() then
 		Duel.Remove(bc,POS_FACEUP,REASON_EFFECT)
+	end
+end
+
+-- Condition: bài này trước đó phải ở sân
+function s.bancon(e,tp,eg,ep,ev,re,r,rp)
+	return e:GetHandler():IsPreviousLocation(LOCATION_MZONE)
+end
+-- Target: có bài trên tay hoặc sân
+function s.bantg(e,tp,eg,ep,ev,re,r,rp,chk)
+	if chk==0 then 
+		return Duel.GetFieldGroupCount(tp,LOCATION_HAND+LOCATION_ONFIELD,0)>0 
+	end
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_ONFIELD,0)
+	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,tp,LOCATION_HAND+LOCATION_ONFIELD)
+end
+-- Operation: banish tất cả
+function s.banop(e,tp,eg,ep,ev,re,r,rp)
+	local g=Duel.GetFieldGroup(tp,LOCATION_HAND+LOCATION_ONFIELD,0)
+	if #g>0 then
+		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end
 end
